@@ -71,26 +71,18 @@ public class C4Explosions extends JavaPlugin implements Listener
 
 		if(action == Action.PHYSICAL)
 			return;
-		Float power = null;
-		if(item.getAmount() > 0 && item.getAmount() <= 5)
-		{
-			power = (float) item.getAmount();
-		}else if(item.getAmount() > 0)
-		{
-			power = 5F;
-		}				
+		Float power = Math.min(Math.max(item.getAmount(), 1), 5);				
 		
 		for(Entity entity : bombs.get(playerName))
 		{
 			System.out.println(entity);
 			createExplosion(entity.getLocation(), power);
 		}			
-			bombs.remove(playerName);				
+		bombs.remove(playerName);				
 	}
 
 	public void createExplosion(Location loc, float power)
 	{
 		loc.getWorld().createExplosion(loc, power, true);
 	}
-
 }
