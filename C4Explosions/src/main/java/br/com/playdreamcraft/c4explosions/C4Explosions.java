@@ -6,20 +6,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class C4Explosions extends JavaPlugin implements Listener
+public class C4Explosions extends org.bukkit.plugin.java.JavaPlugin implements org.bukkit.event.Listener
 {
 	private static Map<String,Set<Entity>> bombs = new HashMap<>();
 
@@ -32,12 +24,12 @@ public class C4Explosions extends JavaPlugin implements Listener
 	@Override
 	public void onDisable()
 	{
-		HandlerList.unregisterAll((Plugin) this);
+		org.bukkit.event.HandlerList.unregisterAll((Plugin) this);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@EventHandler
-	public void dropItem(PlayerDropItemEvent event)
+	@org.bukkit.event.EventHandler
+	public void dropItem(org.bukkit.event.player.PlayerDropItemEvent event)
 	{
 		Player player = event.getPlayer();
 		String playerName = player.getName();
@@ -54,35 +46,29 @@ public class C4Explosions extends JavaPlugin implements Listener
 		}			
 	}
 
-	@EventHandler
-	public void playerInteract(PlayerInteractEvent event)
+	@org.bukkit.event.EventHandler
+	public void playerInteract(org.bukkit.event.player.PlayerInteractEvent event)
 	{	
 		String playerName = event.getPlayer().getName();
 		
 		if(!bombs.containsKey(playerName))
 			return;
 		
-		
 		Action action = event.getAction();
 		ItemStack item = event.getItem();
 
-		if(item.getType() != Material.REDSTONE_TORCH_ON || item == null )
+		if(item.getType() != org.bukkit.Material.REDSTONE_TORCH_ON || item == null )
 			return;
 
-		if(action == Action.PHYSICAL)
+		if(action == org.bukkit.event.block.Action.PHYSICAL)
 			return;
 		Float power = Math.min(Math.max(item.getAmount(), 1), 5);				
 		
 		for(Entity entity : bombs.get(playerName))
 		{
 			System.out.println(entity);
-			createExplosion(entity.getLocation(), power);
+			loc.getWorld().createExplosion(entity.getLocation(), power, true);
 		}			
 		bombs.remove(playerName);				
-	}
-
-	public void createExplosion(Location loc, float power)
-	{
-		loc.getWorld().createExplosion(loc, power, true);
 	}
 }
